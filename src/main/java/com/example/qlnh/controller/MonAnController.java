@@ -3,6 +3,7 @@ package com.example.qlnh.controller;
 import com.example.qlnh.entity.MonAn;
 import com.example.qlnh.repository.MonAnRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/mon-an")
 @CrossOrigin(origins = "*")
+@PreAuthorize("hasRole('DAU_BEP')")
 public class MonAnController {
 
     @Autowired

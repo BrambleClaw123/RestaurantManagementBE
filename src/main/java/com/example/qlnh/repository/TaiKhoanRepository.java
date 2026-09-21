@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TaiKhoanRepository extends JpaRepository<TaiKhoan, String> {
@@ -15,7 +16,8 @@ public interface TaiKhoanRepository extends JpaRepository<TaiKhoan, String> {
     @Query("SELECT t FROM TaiKhoan t WHERE " +
             "LOWER(t.tenDangNhap) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(t.nhanVien.hoTen) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-            "LOWER(t.nhanVien.vaiTro) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+            "LOWER(CAST(t.nhanVien.vaiTro AS string)) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<TaiKhoan> timKiemTaiKhoan(@Param("keyword") String keyword);
     boolean existsByTenDangNhapAndMaNVNot(String tenDangNhap, String maNV);
+    Optional<TaiKhoan> findByTenDangNhap(String tenDangNhap);
 }

@@ -4,11 +4,13 @@ import com.example.qlnh.dto.request.TaiKhoanRequest;
 import com.example.qlnh.service.TaiKhoanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/tai-khoan")
 @CrossOrigin(origins = "*")
+@PreAuthorize("hasRole('ADMIN')")
 public class TaiKhoanController {
 
     @Autowired

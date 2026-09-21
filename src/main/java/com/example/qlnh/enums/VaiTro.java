@@ -5,7 +5,8 @@ public enum VaiTro {
     PHUC_VU("Nhân viên phục vụ"),
     LE_TAN("Lễ tân"),
     NHAN_VIEN_KHO("Nhân viên kho"),
-    QUAN_LY("Người quản lý");
+    QUAN_LY("Người quản lý"),
+    ADMIN("Người quản trị");
 
     private final String giaTri;
 

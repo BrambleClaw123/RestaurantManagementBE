@@ -1,13 +1,11 @@
 package com.example.qlnh.dto.response;
-
 import com.example.qlnh.enums.VaiTro;
 import lombok.Data;
 
 @Data
-public class NhanVienResponse {
+public class LoginResponse {
     private String maNV;
     private String hoTen;
     private VaiTro vaiTro;
-    private String soDienThoai;
-    private String taiKhoanLienKet;
+    private String token; // Tạm thời để trống, bước sau tích hợp JWT sẽ dùng tới
 }

@@ -9,6 +9,9 @@ import com.example.qlnh.service.NhanVienService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class NhanVienServiceImpl implements NhanVienService {
 
@@ -17,6 +20,23 @@ public class NhanVienServiceImpl implements NhanVienService {
 
     @Autowired
     private NhanVienConverter nhanVienConverter;
+
+    @Override
+    public List<NhanVienResponse> layDanhSachNhanVien(String keyword) {
+        List<NhanVien> danhSach;
+
+        // Nếu không có keyword thì lấy tất cả, ngược lại thì gọi hàm tìm kiếm
+        if (keyword == null || keyword.trim().isEmpty()) {
+            danhSach = nhanVienRepository.findAll();
+        } else {
+            danhSach = nhanVienRepository.timKiemNhanVien(keyword.trim());
+        }
+
+        // Chuyển Entity sang DTO bằng Converter đã viết
+        return danhSach.stream()
+                .map(nv -> nhanVienConverter.toResponse(nv))
+                .collect(Collectors.toList());
+    }
 
     @Override
     public NhanVienResponse themNhanVien(NhanVienRequest request) {

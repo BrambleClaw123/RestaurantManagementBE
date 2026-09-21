@@ -9,6 +9,7 @@ import com.example.qlnh.repository.NhanVienRepository;
 import com.example.qlnh.repository.TaiKhoanRepository;
 import com.example.qlnh.service.TaiKhoanService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,6 +27,9 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
 
     @Autowired
     private TaiKhoanConverter taiKhoanConverter;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public TaiKhoan themTaiKhoan(TaiKhoanRequest request) {
@@ -52,7 +56,7 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
 
         tkMoi.setNhanVien(nv);
         tkMoi.setTenDangNhap(request.getTenDangNhap());
-        tkMoi.setMatKhau(request.getMatKhau());
+        tkMoi.setMatKhau(passwordEncoder.encode(request.getMatKhau()));
         tkMoi.setTrangThai(request.getTrangThai() != null ? request.getTrangThai() : 1);
 
         return taiKhoanRepository.save(tkMoi);
@@ -83,7 +87,7 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
         }
 
         tkHienTai.setTenDangNhap(request.getTenDangNhap());
-        tkHienTai.setMatKhau(request.getMatKhau());
+        tkHienTai.setMatKhau(passwordEncoder.encode(request.getMatKhau()));
 
         if (request.getTrangThai() != null) {
             tkHienTai.setTrangThai(request.getTrangThai());
