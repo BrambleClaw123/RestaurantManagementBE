@@ -1,5 +1,7 @@
 package com.example.qlnh.entity;
 
+import com.example.qlnh.enums.DonViTinh;
+import com.example.qlnh.enums.LoaiMon;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,10 +17,10 @@ public class MonAn {
     private String tenMon;
 
     @Column(nullable = false, length = 100)
-    private String loaiMon;
+    private LoaiMon loaiMon;
 
     @Column(nullable = false, length = 20)
-    private String donViTinh;
+    private DonViTinh donViTinh;
 
     @Column(nullable = false)
     private Double donGia;

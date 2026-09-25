@@ -34,7 +34,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         // CHỈ CHO PHÉP API Đăng nhập được đi qua không cần hỏi giấy tờ
-                        .requestMatchers("/api/auth/login").permitAll()
+                        .requestMatchers("/api/auth/login", "/error").permitAll()
 
                         // TOÀN BỘ CÁC API KHÁC (Nhân viên, Tài khoản, Món ăn...) ĐỀU PHẢI XÁC THỰC!
                         .anyRequest().authenticated()

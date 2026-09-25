@@ -1,32 +1,58 @@
 package com.example.qlnh.controller;
 
-import com.example.qlnh.entity.MonAn;
-import com.example.qlnh.repository.MonAnRepository;
+import com.example.qlnh.dto.request.MonAnRequest;
+import com.example.qlnh.service.MonAnService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/mon-an")
 @CrossOrigin(origins = "*")
-@PreAuthorize("hasRole('DAU_BEP')")
 public class MonAnController {
 
     @Autowired
-    private MonAnRepository monAnRepository;
+    private MonAnService monAnService;
 
-    // 1. API Lấy danh sách toàn bộ món ăn (GET)
+    // 1. Danh sách có lọc & tìm kiếm
     @GetMapping
-    public List<MonAn> layDanhSachMonAn() {
-        return monAnRepository.findAll();
+    public ResponseEntity<?> layDanhSach(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String loaiMon) {
+        return ResponseEntity.ok(monAnService.layDanhSach(keyword, loaiMon));
     }
 
-    // 2. API Thêm một món ăn mới (POST)
+    // 2. Lấy dữ liệu 4 thẻ thống kê
+    @GetMapping("/thong-ke")
+    public ResponseEntity<?> layThongKe() {
+        return ResponseEntity.ok(monAnService.layThongKe());
+    }
+
+    // 3. Xem chi tiết (để đổ vào modal Chỉnh sửa)
+    @GetMapping("/{id}")
+    public ResponseEntity<?> layChiTiet(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(monAnService.layChiTiet(id));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // 4. Thêm món mới
     @PostMapping
-    public MonAn themMonAn(@RequestBody MonAn monAnMoi) {
-        // Tự động lưu vào MySQL và trả về cục data vừa lưu
-        return monAnRepository.save(monAnMoi);
+    public ResponseEntity<?> themMonAn(@RequestBody MonAnRequest request) {
+        return ResponseEntity.ok(monAnService.themMonAn(request));
+    }
+
+    // 5. Cập nhật món ăn
+    @PutMapping("/{id}")
+    public ResponseEntity<?> capNhatMonAn(
+            @PathVariable Long id,
+            @RequestBody MonAnRequest request) {
+        try {
+            return ResponseEntity.ok(monAnService.capNhatMonAn(id, request));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }
