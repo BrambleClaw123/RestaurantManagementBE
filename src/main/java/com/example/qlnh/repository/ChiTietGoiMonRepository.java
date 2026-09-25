@@ -11,6 +11,8 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+
 @Repository
 public interface ChiTietGoiMonRepository extends JpaRepository<ChiTietGoiMon, ChiTietGoiMonId> {
     // Thống kê món ăn bán chạy
@@ -21,4 +23,6 @@ public interface ChiTietGoiMonRepository extends JpaRepository<ChiTietGoiMon, Ch
             "GROUP BY m.maMon, m.tenMon, m.loaiMon " +
             "ORDER BY SUM(c.soLuong) DESC")
     List<BaoCaoBanChayResponse.ChiTiet> layChiTietBanChay(@Param("tuNgay") LocalDateTime tuNgay, @Param("denNgay") LocalDateTime denNgay);
+    List< ChiTietGoiMon > findByPhieuGoiMon_MaPhieuGM(Long maPhieuGM);
+    Optional< ChiTietGoiMon > findByPhieuGoiMon_MaPhieuGMAndMonAn_MaMon(Long maPhieuGM, Long maMon);
 }

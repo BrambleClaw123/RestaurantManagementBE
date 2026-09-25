@@ -23,11 +23,10 @@ public class MonAnServiceImpl implements MonAnService {
     private MonAnConverter monAnConverter;
 
     @Override
-    public List<MonAnResponse> layDanhSach(String keyword, String loaiMon) {
+    public List< MonAnResponse > layDanhSach(String keyword, String loaiMon) {
         String finalKeyword = (keyword != null && !keyword.trim().isEmpty()) ? keyword.trim() : null;
         LoaiMon enumLoaiMon = null;
 
-        // Nếu Frontend truyền lên mã Enum (VD: "MON_CHINH") thay vì "Tất cả loại món"
         if (loaiMon != null && !loaiMon.trim().isEmpty() && !loaiMon.equals("Tất cả loại món")) {
             try {
                 enumLoaiMon = LoaiMon.valueOf(loaiMon);
@@ -36,7 +35,7 @@ public class MonAnServiceImpl implements MonAnService {
             }
         }
 
-        List<MonAn> danhSach = monAnRepository.timKiemVaLoc(finalKeyword, enumLoaiMon);
+        List< MonAn > danhSach = monAnRepository.timKiemVaLoc(finalKeyword, enumLoaiMon);
         return danhSach.stream().map(monAnConverter::toResponse).collect(Collectors.toList());
     }
 
@@ -44,8 +43,9 @@ public class MonAnServiceImpl implements MonAnService {
     public ThongKeMonAnResponse layThongKe() {
         return ThongKeMonAnResponse.builder()
                 .tongSoMon(monAnRepository.count())
-                .soMonConPhucVu(monAnRepository.countByTrangThaiConPhucVu())
-                .soMonTamNgung(monAnRepository.countByTrangThaiNgungPhucVu())
+                // SỬA LẠI TÊN HÀM GỌI ĐẾM TRẠNG THÁI
+                .soMonConPhucVu(monAnRepository.countByTrangThai("Còn món"))
+                .soMonTamNgung(monAnRepository.countByTrangThai("Hết món"))
                 .donGiaTrungBinh(monAnRepository.tinhDonGiaTrungBinh() != null ? monAnRepository.tinhDonGiaTrungBinh() : 0.0)
                 .build();
     }
@@ -59,19 +59,18 @@ public class MonAnServiceImpl implements MonAnService {
 
     @Override
     public MonAnResponse themMonAn(MonAnRequest request) {
-        // Kiểm tra trùng lặp
         if (monAnRepository.existsByTenMonIgnoreCase(request.getTenMon().trim())) {
             throw new IllegalArgumentException("Tên món ăn này đã tồn tại trong thực đơn!");
         }
 
         MonAn monMoi = new MonAn();
 
-        // Bỏ dòng sinh mã, database sẽ tự tăng ID
         monMoi.setTenMon(request.getTenMon().trim());
         monMoi.setLoaiMon(request.getLoaiMon());
         monMoi.setDonViTinh(request.getDonViTinh());
         monMoi.setDonGia(request.getDonGia());
-        monMoi.setTrangThai(request.getTrangThai() != null ? request.getTrangThai() : "Còn phục vụ");
+        // SỬA LẠI TRẠNG THÁI MẶC ĐỊNH LÀ "Còn món"
+        monMoi.setTrangThai(request.getTrangThai() != null ? request.getTrangThai() : "Còn món");
 
         return monAnConverter.toResponse(monAnRepository.save(monMoi));
     }
@@ -85,8 +84,14 @@ public class MonAnServiceImpl implements MonAnService {
         monHienTai.setLoaiMon(request.getLoaiMon());
         monHienTai.setDonViTinh(request.getDonViTinh());
         monHienTai.setDonGia(request.getDonGia());
+
+        // Validation nhẹ nếu FE lỡ truyền linh tinh
         if (request.getTrangThai() != null) {
-            monHienTai.setTrangThai(request.getTrangThai());
+            String status = request.getTrangThai().trim();
+            if(!status.equals("Còn món") && !status.equals("Hết món")) {
+                status = "Còn món"; // Hoặc throw Exception tùy bác
+            }
+            monHienTai.setTrangThai(status);
         }
 
         return monAnConverter.toResponse(monAnRepository.save(monHienTai));
